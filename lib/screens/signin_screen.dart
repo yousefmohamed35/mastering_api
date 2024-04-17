@@ -24,7 +24,7 @@ class SignInScreen extends StatelessWidget {
                 content: Text('Login Successful'),
               ),
             );
-          } else if (state is Userfailure) {
+          } else if (state is UserFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.error),

@@ -1,6 +1,10 @@
+import 'package:api/cash/cash_helper.dart';
 import 'package:api/core/api/api_consumer.dart';
+import 'package:api/core/api/end_points.dart';
+import 'package:api/core/errors/exceptions.dart';
 import 'package:api/cubit/user_state.dart';
-import 'package:dio/dio.dart';
+import 'package:api/models/sign_in_model.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -28,5 +32,20 @@ class UserCubit extends Cubit<UserState> {
   TextEditingController signUpPassword = TextEditingController();
   //Sign up confirm password
   TextEditingController confirmPassword = TextEditingController();
-  
+  SignIn? user;
+  signIn() async {
+    try {
+      final response = await apiConsumer.post(EndPoints.signIn, data: {
+        ApiKey.email: signInEmail.text,
+        ApiKey.password: signInPassword.text
+      });
+      emit(UserSuccess());
+      user = SignIn.fromJson(response);
+    final decodeToken =  JwtDecoder.decode(user!.token);
+    CacheHelper().saveData(key: ApiKey.token, value: user!.token);
+    CacheHelper().saveData(key: ApiKey.id, value: decodeToken[ApiKey.id]);
+    } on ServerExpetion catch (e) {
+      emit(UserFailure(error: e.erorrModel.message));
+    }
+  }
 }
