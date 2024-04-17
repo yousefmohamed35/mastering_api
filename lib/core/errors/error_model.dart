@@ -1,3 +1,5 @@
+import 'package:api/core/api/end_points.dart';
+
 class ErorrModel {
   final String message;
   final int code;
@@ -5,8 +7,8 @@ class ErorrModel {
   ErorrModel({required this.message, required this.code});
   factory ErorrModel.fromJson(Map<String, dynamic> json) {
     return ErorrModel(
-      message: json['ErrorMessage'],
-      code: json['status'],
+      message: json[ApiKey.errorMessage],
+      code: json[ApiKey.status],
     );
   }
 }
