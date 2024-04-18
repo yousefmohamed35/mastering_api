@@ -6,6 +6,7 @@ import 'package:api/core/funactions/upload_image_to_api.dart';
 import 'package:api/cubit/user_state.dart';
 import 'package:api/models/sign_in_model.dart';
 import 'package:api/models/sign_up_model.dart';
+import 'package:api/models/user_model.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,25 +41,37 @@ class UserCubit extends Cubit<UserState> {
     emit(UploadProfilePic());
   }
 
-  signUp()async {
+  signUp() async {
     try {
       emit(UserSignUpLoading());
-final response = await  apiConsumer.post(
-    EndPoints.signUp,
-  isFormData: true,
-  data: {
-    ApiKey.name: signUpName.text,
-    ApiKey.email: signUpEmail.text,
-    ApiKey.password: signUpPassword.text,
-    ApiKey.phone: signUpPhoneNumber.text,
-    ApiKey.confirmPassword: confirmPassword.text,
-   ApiKey.profilePic:uploadImageToApi(profilePic!),
-  });
-  SignUpModel signUpModel = SignUpModel.fromJson(response);
-  emit(UserSignUpSuccess(message: signUpModel.message));
-} on ServerExpetion catch (e) {
-  emit(UserSignUpFailure(error: e.erorrModel.message));
-}
+      final response =
+          await apiConsumer.post(EndPoints.signUp, isFormData: true, data: {
+        ApiKey.name: signUpName.text,
+        ApiKey.email: signUpEmail.text,
+        ApiKey.password: signUpPassword.text,
+        ApiKey.phone: signUpPhoneNumber.text,
+        ApiKey.confirmPassword: confirmPassword.text,
+        ApiKey.profilePic: uploadImageToApi(profilePic!),
+      });
+      SignUpModel signUpModel = SignUpModel.fromJson(response);
+      emit(UserSignUpSuccess(message: signUpModel.message));
+    } on ServerExpetion catch (e) {
+      emit(UserSignUpFailure(error: e.erorrModel.message));
+    }
+  }
+
+  getUserProfile() async {
+    try {
+      emit(GetUserLoading());
+      final response = await apiConsumer.get(
+        EndPoints.getUserData(
+          CacheHelper().getData(key: ApiKey.id),
+        ),
+      );
+      emit(GetUserSuccess(userModel: UserModel.fromJson(response),),);
+    }on ServerExpetion catch (e) {
+      emit(GetUserFailure(error: e.erorrModel.message),);
+    }
   }
 
   signIn() async {

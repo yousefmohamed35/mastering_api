@@ -5,8 +5,10 @@ class EndPoints {
   static const String checkEmail = 'user/check-email';
   static const String updateUser = 'user/update';
   static const String deleteUser = 'user/delete?id=64a1fa760db6e1f0ad3c52e6';
-  static const String getUserData = 'user/get-user/64a1fc7dc5b2fe879468c637';
   static const String logOut = 'user/logout';
+  static String getUserData(id){
+    return 'user/get-user/$id';
+  }
 }
 
 class ApiKey {

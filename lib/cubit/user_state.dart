@@ -1,3 +1,5 @@
+import 'package:api/models/user_model.dart';
+
 class UserState {}
 
 final class UserInitial extends UserState {}
@@ -26,4 +28,18 @@ final class UserSignUpFailure extends UserState {
   final String error;
 
   UserSignUpFailure({required this.error});
+}
+
+final class GetUserSuccess extends UserState {
+  final UserModel userModel;
+
+  GetUserSuccess({required this.userModel});
+}
+
+final class GetUserLoading extends UserState {}
+
+final class GetUserFailure extends UserState {
+  final String error;
+
+  GetUserFailure({required this.error});
 }

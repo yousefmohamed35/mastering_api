@@ -1,5 +1,6 @@
 import 'package:api/cubit/user_cubit.dart';
 import 'package:api/cubit/user_state.dart';
+import 'package:api/screens/profile_screen.dart';
 import 'package:api/widgets/custom_form_button.dart';
 import 'package:api/widgets/custom_input_field.dart';
 import 'package:api/widgets/dont_have_an_account.dart';
@@ -22,6 +23,13 @@ class SignInScreen extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Login Successful'),
+              ),
+            );
+            context.read<UserCubit>().getUserProfile();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfileScreen(),
               ),
             );
           } else if (state is UserFailure) {
@@ -78,13 +86,7 @@ class SignInScreen extends StatelessWidget {
                                 : CustomFormButton(
                                     innerText: 'Sign In',
                                     onPressed: () {
-                                      context.read<UserCubit>().SignIn();
-                                      /*  Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const ProfileScreen(),
-                                  ),
-                                );*/
+                                      context.read<UserCubit>().signIn();
                                     },
                                   ),
                             const SizedBox(height: 18),
