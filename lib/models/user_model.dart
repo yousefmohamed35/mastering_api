@@ -15,11 +15,11 @@ class UserModel {
       required this.address});
   factory UserModel.fromJson(Map<String, dynamic> jsonData) {
     return UserModel(
-      name: jsonData[ApiKey.name],
-      email: jsonData[ApiKey.email],
-      profilePic: jsonData[ApiKey.profilePic],
-      phone: jsonData[ApiKey.phone],
-      address: jsonData[ApiKey.location],
+      name: jsonData['user'][ApiKey.name],
+      email: jsonData['user'][ApiKey.email],
+      profilePic: jsonData['user'][ApiKey.profilePic],
+      phone: jsonData['user'][ApiKey.phone],
+      address: jsonData['user'][ApiKey.location],
     );
   }
 }

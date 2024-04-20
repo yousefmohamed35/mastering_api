@@ -10,49 +10,56 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<UserCubit, UserState>(
       listener: (context, state) {
-        // TODO: implement listener
+      if (state is GetUserFailure){
+        ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error),
+              ),
+            );
+      }
       },
       builder: (context, state) {
         return Scaffold(
-          body: ListView(
+          body: state is GetUserLoading? const CircularProgressIndicator():
+          state is GetUserSuccess? ListView(
             children: [
               const SizedBox(height: 16),
               //! Profile Picture
               CircleAvatar(
                 radius: 80,
-                child: Image.asset("assets/images/avatar.png"),
+                backgroundImage: NetworkImage(state.userModel.profilePic),
               ),
               const SizedBox(height: 16),
 
               //! Name
-              const ListTile(
-                title: Text("Name"),
+               ListTile(
+                title: Text(state.userModel.name),
                 leading: Icon(Icons.person),
               ),
               const SizedBox(height: 16),
 
               //! Email
-              const ListTile(
-                title: Text("Email"),
+              ListTile(
+                title: Text(state.userModel.email),
                 leading: Icon(Icons.email),
               ),
               const SizedBox(height: 16),
 
               //! Phone number
-              const ListTile(
-                title: Text("phone number"),
+               ListTile(
+                title: Text(state.userModel.phone),
                 leading: Icon(Icons.phone),
               ),
               const SizedBox(height: 16),
 
               //! Address
-              const ListTile(
-                title: Text("Address"),
+               ListTile(
+                title: Text(state.userModel.address['type']),
                 leading: Icon(Icons.location_city),
               ),
               const SizedBox(height: 16),
             ],
-          ),
+          ):Container(),
         );
       },
     );
