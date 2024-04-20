@@ -1,6 +1,7 @@
 import 'package:api/cash/cash_helper.dart';
 import 'package:api/core/api/dio_consumer.dart';
 import 'package:api/cubit/user_cubit.dart';
+import 'package:api/repostries/user_repostry.dart';
 import 'package:api/screens/signin_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,13 @@ void main() {
   CacheHelper().init();
   runApp(
     BlocProvider(
-      create: (context) => UserCubit(DioConsumer(dio: Dio())),
+      create: (context) => UserCubit(
+        UserRepositry(
+          apiConsumer: DioConsumer(
+            dio: Dio(),
+          ),
+        ),
+      ),
       child: const ApiApp(),
     ),
   );

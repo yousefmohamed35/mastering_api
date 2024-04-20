@@ -1,3 +1,4 @@
+import 'package:api/models/sign_in_model.dart';
 import 'package:api/models/user_model.dart';
 
 class UserState {}
@@ -6,7 +7,11 @@ final class UserInitial extends UserState {}
 
 final class UserLoading extends UserState {}
 
-final class UserSuccess extends UserState {}
+final class UserSuccess extends UserState {
+  final SignIn signIn;
+
+  UserSuccess({required this.signIn});
+}
 
 final class UserFailure extends UserState {
   final String error;
@@ -27,7 +32,7 @@ final class UserSignUpSuccess extends UserState {
 final class UserSignUpFailure extends UserState {
   final String error;
 
-  UserSignUpFailure({required this.error});
+  UserSignUpFailure( {required this.error});
 }
 
 final class GetUserSuccess extends UserState {

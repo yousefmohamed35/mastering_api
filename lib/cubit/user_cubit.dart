@@ -1,20 +1,13 @@
-import 'package:api/cash/cash_helper.dart';
-import 'package:api/core/api/api_consumer.dart';
-import 'package:api/core/api/end_points.dart';
-import 'package:api/core/errors/exceptions.dart';
-import 'package:api/core/funactions/upload_image_to_api.dart';
 import 'package:api/cubit/user_state.dart';
 import 'package:api/models/sign_in_model.dart';
-import 'package:api/models/sign_up_model.dart';
-import 'package:api/models/user_model.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:api/repostries/user_repostry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserCubit extends Cubit<UserState> {
-  UserCubit(this.apiConsumer) : super(UserInitial());
-  final ApiConsumer apiConsumer;
+  UserCubit(this.userRepositry) : super(UserInitial());
+  final UserRepositry userRepositry;
   //Sign in Form key
   GlobalKey<FormState> signInFormKey = GlobalKey();
   //Sign in email
@@ -42,51 +35,27 @@ class UserCubit extends Cubit<UserState> {
   }
 
   signUp() async {
-    try {
-      emit(UserSignUpLoading());
-      final response =
-          await apiConsumer.post(EndPoints.signUp, isFormData: true, data: {
-        ApiKey.name: signUpName.text,
-        ApiKey.email: signUpEmail.text,
-        ApiKey.password: signUpPassword.text,
-        ApiKey.phone: signUpPhoneNumber.text,
-        ApiKey.confirmPassword: confirmPassword.text,
-        ApiKey.profilePic: uploadImageToApi(profilePic!),
-      });
-      SignUpModel signUpModel = SignUpModel.fromJson(response);
-      emit(UserSignUpSuccess(message: signUpModel.message));
-    } on ServerExpetion catch (e) {
-      emit(UserSignUpFailure(error: e.erorrModel.message));
-    }
+    emit(UserSignUpLoading());
+    final response = await userRepositry.signUp(
+        signUpName: signUpName.text,
+        signUpEmail: signUpEmail.text,
+        signUpPassword: signUpPassword.text,
+        confirmPassword: confirmPassword.text,
+        signUpPhoneNumber: signUpPhoneNumber.text);
+    response.fold(
+      (errorMessage) => emit(UserSignUpFailure(error: errorMessage)),
+      (signUpModel) => emit(
+        UserSignUpSuccess(message: signUpModel.message),
+      ),
+    );
   }
 
-  getUserProfile() async {
-    try {
-      emit(GetUserLoading());
-      final response = await apiConsumer.get(
-        EndPoints.getUserData(
-          CacheHelper().getData(key: ApiKey.id),
-        ),
-      );
-      emit(GetUserSuccess(userModel: UserModel.fromJson(response),),);
-    }on ServerExpetion catch (e) {
-      emit(GetUserFailure(error: e.erorrModel.message),);
-    }
-  }
+  getUserProfile() async {}
 
   signIn() async {
-    try {
-      final response = await apiConsumer.post(EndPoints.signIn, data: {
-        ApiKey.email: signInEmail.text,
-        ApiKey.password: signInPassword.text
-      });
-      emit(UserSuccess());
-      user = SignIn.fromJson(response);
-      final decodeToken = JwtDecoder.decode(user!.token);
-      CacheHelper().saveData(key: ApiKey.token, value: user!.token);
-      CacheHelper().saveData(key: ApiKey.id, value: decodeToken[ApiKey.id]);
-    } on ServerExpetion catch (e) {
-      emit(UserFailure(error: e.erorrModel.message));
-    }
+    emit(UserInitial());
+    final response = await userRepositry.signIn(
+        email: signInEmail.text, password: signInPassword.text);
+    response.fold((errorMessage) => emit(UserFailure(error: errorMessage)), (signInModel) => emit(UserSuccess(signIn: signInModel)));
   }
 }
